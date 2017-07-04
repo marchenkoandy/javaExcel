@@ -22,10 +22,13 @@ public class ExcelWorkbook {
         this.inputFile = inputFile;
         return this;
     }
-    public ExcelWorkbook read() throws IOException {
+    public ArrayList<Result> read(){
         currentResults = new ArrayList<Result>();
         File file = new File(inputFile);
-        FileInputStream inputStream = new FileInputStream(inputFile);
+        FileInputStream inputStream=null;
+        try{
+            inputStream= new FileInputStream(inputFile);
+
         Workbook currentWorkbook=null;
         String fileName = file.getName();
         String fileExtentionName = fileName.substring(fileName.lastIndexOf("."));
@@ -35,8 +38,6 @@ public class ExcelWorkbook {
         else if (fileExtentionName.equals(xls)) {
             currentWorkbook=new HSSFWorkbook(inputStream);
         }
-
-        try {
             for (int currentSheetNumber=0;currentSheetNumber<= currentWorkbook.getNumberOfSheets()-1;currentSheetNumber++) {
                 Sheet currentSheet = currentWorkbook.getSheetAt(currentSheetNumber);
                 Row headerRow = currentSheet.getRow(0);
@@ -63,10 +64,18 @@ public class ExcelWorkbook {
                     currentResults.add(currentResult);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }finally {
+            if (inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        return this;
+        return currentResults;
     }
     public void print(){
         for (Result r:currentResults) {

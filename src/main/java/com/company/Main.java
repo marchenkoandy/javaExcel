@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
 //Create a file chooser
 //        MainDialog dialog = new MainDialog();
 //        dialog.pack();
@@ -23,7 +23,11 @@ public class Main {
 //
 //        fc.showOpenDialog(dialog);
 //        int returnVal = fc.showOpenDialog();
-        ExcelWorkbook excelWorkbook = new ExcelWorkbook();
-        excelWorkbook.setInputFile("C:/Users/amarchenko/Desktop/Java_Excel/ACO.xls").read().print();
+//        ExcelWorkbook excelWorkbook = new ExcelWorkbook();
+//        excelWorkbook.setInputFile("C:/Temp/ACO_LMO/ACO.xlsx").read().print();
+        MainDialog dialog = new MainDialog();
+        dialog.pack();
+        dialog.setVisible(true);
+        System.exit(0);
     }
 }
