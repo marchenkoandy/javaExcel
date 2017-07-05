@@ -2,6 +2,7 @@ package com.company;
 
 import com.company.excel.*;
 import com.company.files.FileBrowser;
+import com.company.frame.MainDialog;
 import org.apache.poi.ss.usermodel.CellType;
 
 import java.io.File;
@@ -128,14 +129,16 @@ public class Main {
         printOnLevel(LEVEL,"Full amount of unique records" + delta+": " + counter);
     }
     public static void                      main(String[] args) throws IOException {
-        FileBrowser fb = new FileBrowser();
-        fb.getFilesFromSingleFolder(new File("C:/Users/amarchenko/Desktop/Java_Excel"));
-        filesCount = fb.recursiveListofFiles().size();
-        for (String file :fb.recursiveListofFiles()) {
-            ExcelWorkbook excelWorkbook = new ExcelWorkbook();
-            excelWorkbook.read(new File(file));
-            allWorkbooks.add(excelWorkbook);
-        }
+        boolean bGUI = true;
+        if (!bGUI) {
+            FileBrowser fb = new FileBrowser();
+            fb.getFilesFromSingleFolder(new File("C:/Users/amarchenko/Desktop/Java_Excel"));
+            filesCount = fb.recursiveListofFiles().size();
+            for (String file : fb.recursiveListofFiles()) {
+                ExcelWorkbook excelWorkbook = new ExcelWorkbook();
+                excelWorkbook.read(new File(file));
+                allWorkbooks.add(excelWorkbook);
+            }
 //        printResults();
 //        System.in.read();
 
@@ -143,16 +146,23 @@ public class Main {
 //        printAllResultRecords();
 
 
-        getUniqueResults();
+            getUniqueResults();
 
 
-        printUniqueResults(null);
-        printUniqueResults(CellType.BLANK);
-        printUniqueResults(CellType._NONE);
-        printUniqueResults(CellType.BOOLEAN);
-        printUniqueResults(CellType.NUMERIC);
-        printUniqueResults(CellType.ERROR);
-        printUniqueResults(CellType.FORMULA);
-        printUniqueResults(CellType.STRING);
+            printUniqueResults(null);
+            printUniqueResults(CellType.BLANK);
+            printUniqueResults(CellType._NONE);
+            printUniqueResults(CellType.BOOLEAN);
+            printUniqueResults(CellType.NUMERIC);
+            printUniqueResults(CellType.ERROR);
+            printUniqueResults(CellType.FORMULA);
+            printUniqueResults(CellType.STRING);
+        }
+        else {
+            MainDialog dialog = new MainDialog();
+            dialog.setVisible(true);
+
+//            System.exit(0);
+        }
     }
 }

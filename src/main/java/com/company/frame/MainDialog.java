@@ -20,7 +20,6 @@ public class MainDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonFile);
-
         buttonFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onFile();
@@ -52,6 +51,8 @@ public class MainDialog extends JDialog {
                 onFolder();
             }
         });
+        pack();
+        setSize(400,300);
 
     }
 
@@ -82,7 +83,12 @@ public class MainDialog extends JDialog {
     public static void main(String[] args) {
         MainDialog dialog = new MainDialog();
         dialog.pack();
+        dialog.setSize(400,300);
         dialog.setVisible(true);
         System.exit(0);
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 }
