@@ -1,8 +1,7 @@
 package com.company;
 
-import com.company.excel.ColumnInfo;
+import com.company.excel.ExcelWorkbook_OLD;
 import com.company.excel.ExcelWorkbook;
-import com.company.excel.ExcelWorkbook_ToRefact;
 import com.company.excel.Result;
 import com.company.files.FileBrowser;
 import java.io.File;
@@ -23,7 +22,7 @@ public class Main {
 //
 //        fc.showOpenDialog(dialog);
 //        int returnVal = fc.showOpenDialog();
-//        ExcelWorkbook excelWorkbook = new ExcelWorkbook();
+//        ExcelWorkbook_OLD excelWorkbook = new ExcelWorkbook_OLD();
 //        excelWorkbook.setInputFile("C:/Temp/ACO_LMO/ACO.XLSX").read().print();
 //        MainDialog dialog = new MainDialog();
 //        dialog.pack();
@@ -37,12 +36,12 @@ public class Main {
      ArrayList<Result> currentResults = new ArrayList<Result>();
      for (String file :fb.recursiveListofFiles()) {
 //            System.out.println("Working with file: " + file);
-         ExcelWorkbook excelWorkbook = new ExcelWorkbook();
-         excelWorkbook.setInputFile(file).read();
-         currentResults.addAll(excelWorkbook.getResults());
+         ExcelWorkbook_OLD excelWorkbookOLD = new ExcelWorkbook_OLD();
+         excelWorkbookOLD.setInputFile(file).read();
+         currentResults.addAll(excelWorkbookOLD.getResults());
      }
-//        ExcelWorkbook.print(currentResults);
-     ExcelWorkbook.print(ExcelWorkbook.uniqueList(currentResults));
+//        ExcelWorkbook_OLD.print(currentResults);
+     ExcelWorkbook_OLD.print(ExcelWorkbook_OLD.uniqueList(currentResults));
  }
 
     public static void main(String[] args){
@@ -50,15 +49,15 @@ public class Main {
         FileBrowser fb = new FileBrowser();
         fb.getFilesFromSingleFolder(new File("C:/Users/amarchenko/Desktop/Java_Excel"));
         System.out.println("Files count is: " + fb.recursiveListofFiles().size());
-        ArrayList<ExcelWorkbook_ToRefact> allWorkbooks = new ArrayList<ExcelWorkbook_ToRefact>();
+        ArrayList<ExcelWorkbook> allWorkbooks = new ArrayList<ExcelWorkbook>();
         for (String file :fb.recursiveListofFiles()) {
             System.out.println("Working with file: " + file);
-            ExcelWorkbook_ToRefact excelWorkbook = new ExcelWorkbook_ToRefact();
+            ExcelWorkbook excelWorkbook = new ExcelWorkbook();
 
             excelWorkbook.read(new File(file));
             allWorkbooks.add(excelWorkbook);
         }
-//        ExcelWorkbook.print(currentResults);
-//        ExcelWorkbook.print(ExcelWorkbook.uniqueList(currentResults));
+//        ExcelWorkbook_OLD.print(currentResults);
+//        ExcelWorkbook_OLD.print(ExcelWorkbook_OLD.uniqueList(currentResults));
     }
 }
