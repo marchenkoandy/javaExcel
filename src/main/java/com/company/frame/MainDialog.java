@@ -62,7 +62,7 @@ public class MainDialog extends JDialog {
     private void onFile() {
         // add your code here
         ExcelWorkbook excelWorkbook = new ExcelWorkbook();
-        results = excelWorkbook.setInputFile("C:/Temp/ACO_LMO/ACO.xlsx").read();
+        results = excelWorkbook.setInputFile("C:/Temp/ACO_LMO/ACO.XLSX").read();
         for (Result r:results) {
             String line;
             line = "%s  %s  %s  %s  %s";

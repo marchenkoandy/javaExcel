@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -14,16 +15,64 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelWorkbook {
-    private final String xlsx = ".xlsx";
-    private final String xls = ".xls";
+    public static final String XLSX = ".xlsx";
+    public static final String XLS = ".xls";
+    public static final String TILDA = "~$";
+
     private String inputFile;
-    private ArrayList<Result> currentResults;
     public ExcelWorkbook setInputFile(String inputFile) {
         this.inputFile = inputFile;
         return this;
     }
+
+    private ArrayList<Result> results = new ArrayList<Result>();
+    public ArrayList<Result> getResults() {
+        return results;
+    }
+
+    private Sheet currentSheet;
+    private Row headerRow;
+    private Row firstRow;
+    private int headerRowColumnsCount;
+
+    private void initializeSheet(){
+//        System.out.println(currentSheet.getSheetName());
+        headerRow = currentSheet.getRow(0);
+        firstRow = currentSheet.getRow(1);
+        if (headerRow != null && firstRow != null) {
+            headerRowColumnsCount = headerRow.getLastCellNum();
+        }
+    }
+    private String convertDataToString(Cell cell){
+        String sOut = "";
+        if (cell != null) {
+            switch (cell.getCellTypeEnum()) {
+                case STRING:
+                    sOut = cell.getStringCellValue();
+                    break;
+                case BOOLEAN:
+                    sOut = Boolean.toString(cell.getBooleanCellValue());
+                    break;
+                case NUMERIC:
+                    sOut = Double.toString(cell.getNumericCellValue());
+                    break;
+            }
+        }
+        return sOut;
+    }
+    private Result getColumnInfo(int i) {
+        Result result = new Result();
+        Cell currentHeaderCell = headerRow.getCell(i);
+        Cell currentFirstRowCell = firstRow.getCell(i);
+        result.cellValue = convertDataToString(currentHeaderCell);          //currentHeaderCell != null ? currentHeaderCell.getStringCellValue() : "";
+        result.cellTypeName = currentFirstRowCell != null ? currentFirstRowCell.getCellTypeEnum().toString() : "";
+        result.cellSheetName = currentSheet.getSheetName();
+        result.cellWorkbookName = inputFile;
+        result.cellColumnNumber = i + 1;
+        return result;
+    }
+
     public ArrayList<Result> read(){
-        currentResults = new ArrayList<Result>();
         File file = new File(inputFile);
         FileInputStream inputStream=null;
         try{
@@ -31,37 +80,21 @@ public class ExcelWorkbook {
 
         Workbook currentWorkbook=null;
         String fileName = file.getName();
-        String fileExtentionName = fileName.substring(fileName.lastIndexOf("."));
-        if (fileExtentionName.equals(xlsx)) {
+        String fileExtensionName = fileName.substring(fileName.lastIndexOf("."));
+        if (fileExtensionName.equals(XLSX)) {
             currentWorkbook=new XSSFWorkbook (inputStream);
         }
-        else if (fileExtentionName.equals(xls)) {
+        else if (fileExtensionName.equals(XLS)) {
             currentWorkbook=new HSSFWorkbook(inputStream);
         }
-            for (int currentSheetNumber=0;currentSheetNumber<= currentWorkbook.getNumberOfSheets()-1;currentSheetNumber++) {
-                Sheet currentSheet = currentWorkbook.getSheetAt(currentSheetNumber);
-                Row headerRow = currentSheet.getRow(0);
-                int headerColumnsCount = headerRow.getLastCellNum();
-                int newRowsCount = headerColumnsCount;
-                for (int currentRowNumber=1;currentRowNumber<=currentSheet.getLastRowNum();currentRowNumber++) {
-                    Row currentDataRow = currentSheet.getRow(currentRowNumber);
-                    int currenrRowColumnsCount = currentDataRow.getLastCellNum();
-                    if (newRowsCount < currenrRowColumnsCount){
-                        newRowsCount = currenrRowColumnsCount;
-                        System.out.println("Invalid columns count");
+            for (int currentSheetNumber=0;currentSheetNumber<currentWorkbook.getNumberOfSheets();currentSheetNumber++) {
+                currentSheet = currentWorkbook.getSheetAt(currentSheetNumber);
+                initializeSheet();
+                if (headerRow != null && firstRow != null) {
+                    for (int i = 0; i < headerRowColumnsCount; i++) {
+                        Result currentResult = getColumnInfo(i);
+                        results.add(currentResult);
                     }
-                }
-                for (int i=0;i<=newRowsCount-1;i++){
-                    Cell currentHeaderCell          = headerRow.getCell(i);
-                    Cell currentDataCell            = currentSheet.getRow(1).getCell(i);
-
-                    Result currentResult            = new Result();
-                    currentResult.cellValue         = i<=headerColumnsCount-1?currentHeaderCell.getStringCellValue():"";
-                    currentResult.cellTypeName      = currentDataCell.getCellTypeEnum().toString();
-                    currentResult.cellSheetName     = currentSheet.getSheetName();
-                    currentResult.cellWorkbookName  = inputFile;
-                    currentResult.cellColumnNumber  = i + 1;
-                    currentResults.add(currentResult);
                 }
             }
         } catch (IOException e) {
@@ -75,14 +108,37 @@ public class ExcelWorkbook {
                 }
             }
         }
-        return currentResults;
+        return results;
     }
-    public void print(){
-        for (Result r:currentResults) {
-            String line;
-            line = "%s  %s  %s  %s  %s";
-            line = String.format(line,r.cellValue,r.cellTypeName,r.cellSheetName,r.cellWorkbookName,r.cellColumnNumber);
-            System.out.println(line);
+    private static void printSingleRecord(Result r){
+        String line;
+        line = "%s %s %s %s %s";
+        line = String.format(line,r.cellValue,r.cellTypeName,r.cellSheetName,r.cellWorkbookName,r.cellColumnNumber);
+        System.out.println(line);
+    }
+    public static void print(ArrayList<Result> results){
+        for (Result r: results) {
+            printSingleRecord(r);
         }
+        System.out.println("Full amount of records is: " + results.size());
     }
+    public static HashMap<String,Result> uniqueList(ArrayList<Result> results){
+        HashMap <String,Result> uniqueList = new HashMap<String, Result>();
+        for (Result r:results) {
+            if (!uniqueList.containsKey(r.cellValue)){
+                uniqueList.put(r.cellValue,r);
+            }
+        }
+        return uniqueList;
+    }
+    public static void print( HashMap<String,Result> list){
+        for (Map.Entry<String,Result> item: list.entrySet()) {
+            if (!item.getValue().cellTypeName.equals("STRING")) {
+//                System.out.println(item.getKey());
+                printSingleRecord(item.getValue());
+            }
+        }
+        System.out.println("Full amount of unique records is: " + list.size());
+    }
+
 }
