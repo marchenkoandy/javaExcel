@@ -2,6 +2,7 @@ package com.company.excel;
 
 import com.company.Main;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -41,15 +42,15 @@ public class ExcelWorksheet {
         return sOut;
     }
     private ColumnInfo getColumnInfo(int i) {
-        ColumnInfo columnInfo = new ColumnInfo();
-        Cell currentHeaderCell = headerRow.getCell(i);
-        Cell currentFirstRowCell = firstRow.getCell(i);
-        columnInfo.value = convertDataToString(currentHeaderCell);
-        columnInfo.typeName = currentFirstRowCell != null ? currentFirstRowCell.getCellTypeEnum().toString() : "";
-        columnInfo.columnNumber = i + 1;
+        ColumnInfo columnInfo       = new ColumnInfo();
+        Cell currentHeaderCell      = headerRow.getCell(i);
+        Cell currentFirstRowCell    = firstRow.getCell(i);
+        columnInfo.value            = convertDataToString(currentHeaderCell);
+        columnInfo.type             = currentFirstRowCell != null ? currentFirstRowCell.getCellTypeEnum() : CellType.BLANK;
+        columnInfo.columnNumber     = i + 1;
         return columnInfo;
     }
-    public static int LEVEL = 3;
+    public static int LEVEL = ExcelWorkbook.LEVEL + 1;
 
 
     public String name;
@@ -71,10 +72,10 @@ public class ExcelWorksheet {
         return columnInfos;
     }
     public void info(){
-        Main.printOnLevel(LEVEL,Main.delimeter());
+        Main.printOnLevel(LEVEL,Main.delimiter());
         Main.printOnLevel(LEVEL,"Worksheet name:             " + name);
         Main.printOnLevel(LEVEL,"Worksheet columns count:    " + columnInfos.size());
-        Main.printOnLevel(LEVEL,Main.delimeter());
+        Main.printOnLevel(LEVEL,Main.delimiter());
     }
     public void printResults() {
         info();

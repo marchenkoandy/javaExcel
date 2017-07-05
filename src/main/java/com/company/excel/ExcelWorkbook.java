@@ -17,7 +17,7 @@ public class ExcelWorkbook {
     public static final String XLSX = ".xlsx";
     public static final String XLS = ".xls";
     public static final String TILDA = "~$";
-    public static int LEVEL = 2;
+    public static int LEVEL = Main.LEVEL + 1;
     public String name;
     public ArrayList<ExcelWorksheet> sheets = new ArrayList<ExcelWorksheet>();
 
@@ -52,10 +52,10 @@ public class ExcelWorkbook {
         }
     }
     public void info(){
-        Main.printOnLevel(LEVEL,Main.delimeter());
+        Main.printOnLevel(LEVEL,Main.delimiter());
         Main.printOnLevel(LEVEL,"Workbook file name:     " + name);
         Main.printOnLevel(LEVEL,"Workbook sheets count:  " + sheets.size());
-        Main.printOnLevel(LEVEL,Main.delimeter());
+        Main.printOnLevel(LEVEL,Main.delimiter());
     }
     public void printResults() {
         info();

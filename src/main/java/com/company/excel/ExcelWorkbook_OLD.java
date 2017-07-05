@@ -65,7 +65,7 @@ public class ExcelWorkbook_OLD {
         Cell currentHeaderCell = headerRow.getCell(i);
         Cell currentFirstRowCell = firstRow.getCell(i);
         result.cellValue = convertDataToString(currentHeaderCell);          //currentHeaderCell != null ? currentHeaderCell.getStringCellValue() : "";
-        result.cellTypeName = currentFirstRowCell != null ? currentFirstRowCell.getCellTypeEnum().toString() : "";
+        result.cellType = currentFirstRowCell != null ? currentFirstRowCell.getCellTypeEnum() : null;
         result.cellSheetName = currentSheet.getSheetName();
         result.cellWorkbookName = inputFile;
         result.cellColumnNumber = i + 1;
@@ -113,7 +113,7 @@ public class ExcelWorkbook_OLD {
     private static void printSingleRecord(Result r){
         String line;
         line = "%s %s %s %s %s";
-        line = String.format(line,r.cellValue,r.cellTypeName,r.cellSheetName,r.cellWorkbookName,r.cellColumnNumber);
+        line = String.format(line,r.cellValue,r.cellType,r.cellSheetName,r.cellWorkbookName,r.cellColumnNumber);
         System.out.println(line);
     }
     public static void print(ArrayList<Result> results){
@@ -133,7 +133,7 @@ public class ExcelWorkbook_OLD {
     }
     public static void print( HashMap<String,Result> list){
         for (Map.Entry<String,Result> item: list.entrySet()) {
-            if (!item.getValue().cellTypeName.equals("STRING")) {
+            if (!item.getValue().cellType.equals("STRING")) {
 //                System.out.println(item.getKey());
                 printSingleRecord(item.getValue());
             }

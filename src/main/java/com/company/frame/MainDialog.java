@@ -66,7 +66,7 @@ public class MainDialog extends JDialog {
         for (Result r:results) {
             String line;
             line = "%s  %s  %s  %s  %s";
-            line = String.format(line, r.cellValue, r.cellTypeName, r.cellSheetName, r.cellWorkbookName, r.cellColumnNumber);
+            line = String.format(line, r.cellValue, r.cellType, r.cellSheetName, r.cellWorkbookName, r.cellColumnNumber);
             textArea1.append(line + "\n");
         }
 //            System.out.println(line);
