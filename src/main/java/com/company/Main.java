@@ -43,6 +43,11 @@ public class Main {
 //        ExcelWorkbook_OLD.print(currentResults);
      ExcelWorkbook_OLD.print(ExcelWorkbook_OLD.uniqueList(currentResults));
  }
+    public void printResults(ArrayList<ExcelWorkbook> allWorkbooks){
+        for (ExcelWorkbook workbook:allWorkbooks) {
+            workbook.printResults();
+        }
+    }
 
     public static void main(String[] args){
 
@@ -53,10 +58,10 @@ public class Main {
         for (String file :fb.recursiveListofFiles()) {
             System.out.println("Working with file: " + file);
             ExcelWorkbook excelWorkbook = new ExcelWorkbook();
-
             excelWorkbook.read(new File(file));
             allWorkbooks.add(excelWorkbook);
         }
+        new Main().printResults(allWorkbooks);
 //        ExcelWorkbook_OLD.print(currentResults);
 //        ExcelWorkbook_OLD.print(ExcelWorkbook_OLD.uniqueList(currentResults));
     }

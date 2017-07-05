@@ -70,4 +70,9 @@ public class ExcelWorksheet {
         return results;
     }
 
+    public void printResults() {
+        for (ColumnInfo info: results) {
+            info.printResults();
+        }
+    }
 }

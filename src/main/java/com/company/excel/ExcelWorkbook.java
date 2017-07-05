@@ -50,4 +50,10 @@ public class ExcelWorkbook {
             }
         }
     }
+
+    public void printResults() {
+        for (ExcelWorksheet sheet:sheets) {
+            sheet.printResults();
+        }
+    }
 }
