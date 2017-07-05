@@ -43,7 +43,28 @@ public class Main {
 //        ExcelWorkbook_OLD.print(currentResults);
      ExcelWorkbook_OLD.print(ExcelWorkbook_OLD.uniqueList(currentResults));
  }
-    public void printResults(ArrayList<ExcelWorkbook> allWorkbooks){
+    public static String delimeter(){
+        return "========================================";
+    }
+    public static ArrayList<ExcelWorkbook> allWorkbooks = new ArrayList<ExcelWorkbook>();
+    public static int filesCount;
+    public static int LEVEL = 1;
+
+    public static void printOnLevel(int level, String line){
+        String tab = "\t";
+        String tabs = "";
+        for (int i=1;i<level;i++){
+            tabs += tab;
+        }
+        System.out.println(tabs + line);
+    }
+    public static void info(){
+        printOnLevel(LEVEL,delimeter());
+        printOnLevel(LEVEL,"Files count is: " + filesCount);
+        printOnLevel(LEVEL,delimeter());
+    }
+    public static void printResults(){
+        info();
         for (ExcelWorkbook workbook:allWorkbooks) {
             workbook.printResults();
         }
@@ -53,15 +74,16 @@ public class Main {
 
         FileBrowser fb = new FileBrowser();
         fb.getFilesFromSingleFolder(new File("C:/Users/amarchenko/Desktop/Java_Excel"));
-        System.out.println("Files count is: " + fb.recursiveListofFiles().size());
-        ArrayList<ExcelWorkbook> allWorkbooks = new ArrayList<ExcelWorkbook>();
+        filesCount = fb.recursiveListofFiles().size();
+
+//        ArrayList<ExcelWorkbook> allWorkbooks = new ArrayList<ExcelWorkbook>();
         for (String file :fb.recursiveListofFiles()) {
-            System.out.println("Working with file: " + file);
+//            System.out.println("Working with file: " + file);
             ExcelWorkbook excelWorkbook = new ExcelWorkbook();
             excelWorkbook.read(new File(file));
             allWorkbooks.add(excelWorkbook);
         }
-        new Main().printResults(allWorkbooks);
+        printResults();
 //        ExcelWorkbook_OLD.print(currentResults);
 //        ExcelWorkbook_OLD.print(ExcelWorkbook_OLD.uniqueList(currentResults));
     }

@@ -1,5 +1,6 @@
 package com.company.excel;
 
+import com.company.Main;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,7 +17,7 @@ public class ExcelWorkbook {
     public static final String XLSX = ".xlsx";
     public static final String XLS = ".xls";
     public static final String TILDA = "~$";
-
+    public static int LEVEL = 2;
     public String name;
     public ArrayList<ExcelWorksheet> sheets = new ArrayList<ExcelWorksheet>();
 
@@ -50,8 +51,14 @@ public class ExcelWorkbook {
             }
         }
     }
-
+    public void info(){
+        Main.printOnLevel(LEVEL,Main.delimeter());
+        Main.printOnLevel(LEVEL,"Workbook file name:     " + name);
+        Main.printOnLevel(LEVEL,"Workbook sheets count:  " + sheets.size());
+        Main.printOnLevel(LEVEL,Main.delimeter());
+    }
     public void printResults() {
+        info();
         for (ExcelWorksheet sheet:sheets) {
             sheet.printResults();
         }

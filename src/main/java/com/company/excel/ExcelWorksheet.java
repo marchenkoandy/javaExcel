@@ -1,5 +1,6 @@
 package com.company.excel;
 
+import com.company.Main;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,7 +15,7 @@ public class ExcelWorksheet {
     private Row firstRow;
     private int headerRowColumnsCount;
     private Sheet sheet;
-    private ArrayList<ColumnInfo> results = new ArrayList<ColumnInfo>();
+    private ArrayList<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
     private void initializeSheet() {
         headerRow = sheet.getRow(0);
         firstRow = sheet.getRow(1);
@@ -48,7 +49,7 @@ public class ExcelWorksheet {
         columnInfo.columnNumber = i + 1;
         return columnInfo;
     }
-
+    public static int LEVEL = 3;
 
 
     public String name;
@@ -61,17 +62,23 @@ public class ExcelWorksheet {
         if (headerRow != null && firstRow != null) {
             for (int i = 0; i < headerRowColumnsCount; i++) {
                 ColumnInfo currentResult = getColumnInfo(i);
-                results.add(currentResult);
+                columnInfos.add(currentResult);
             }
         }
         return this;
     }
-    public ArrayList<ColumnInfo> getResults() {
-        return results;
+    public ArrayList<ColumnInfo> getColumnInfos() {
+        return columnInfos;
     }
-
+    public void info(){
+        Main.printOnLevel(LEVEL,Main.delimeter());
+        Main.printOnLevel(LEVEL,"Worksheet name:             " + name);
+        Main.printOnLevel(LEVEL,"Worksheet columns count:    " + columnInfos.size());
+        Main.printOnLevel(LEVEL,Main.delimeter());
+    }
     public void printResults() {
-        for (ColumnInfo info: results) {
+        info();
+        for (ColumnInfo info: columnInfos) {
             info.printResults();
         }
     }
