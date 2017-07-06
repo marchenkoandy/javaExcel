@@ -15,25 +15,30 @@ public class MainDialog extends JDialog {
 
     private JScrollPane textArea;
     private JTextArea textArea1;
+    private JLabel lableInfo;
+    private JLabel lableProcessing;
     private ArrayList<Result> results;
     public MainDialog() {
         setContentPane(contentPane);
         setModal(true);
-        getRootPane().setDefaultButton(buttonFile);
+        getRootPane().setDefaultButton(buttonCancel);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        buttonFolder.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                onFolder();
+            }
+        });
         buttonFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onFile();
             }
         });
-
         buttonCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
             }
         });
 
-        // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 onCancel();
@@ -46,13 +51,11 @@ public class MainDialog extends JDialog {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        buttonFolder.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onFolder();
-            }
-        });
+
+
         pack();
-        setSize(400,300);
+
+        setSize(400,200);
 
     }
 

@@ -24,7 +24,7 @@ public class ExcelWorksheet {
             headerRowColumnsCount = headerRow.getLastCellNum();
         }
     }
-    private String convertDataToString(Cell cell){
+    public static String convertDataToString(Cell cell){
         String sOut = "";
         if (cell != null) {
             switch (cell.getCellTypeEnum()) {
@@ -66,7 +66,14 @@ public class ExcelWorksheet {
                 columnInfos.add(currentResult);
             }
         }
+        garbageColleсtion();
         return this;
+    }
+    private void garbageColleсtion(){
+        this.headerRow      = null;
+        this.firstRow       = null;
+        this.sheet          = null;
+
     }
     public ArrayList<ColumnInfo> getColumnInfos() {
         return columnInfos;

@@ -2,11 +2,13 @@ package com.company.excel;
 
 import com.company.Main;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -19,25 +21,56 @@ public class ExcelWorkbook {
     public static final String TILDA = "~$";
     public static int LEVEL = Main.LEVEL + 1;
     public String name;
+    public Workbook workbook = null;
     public ArrayList<ExcelWorksheet> sheets = new ArrayList<ExcelWorksheet>();
+    public File fileExcel;
 
-    public void read(File fileExcel){
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    private String extension;
+    public ExcelWorkbook                (File fileExcel) {
+        this.fileExcel      = fileExcel;
+        this.name           = fileExcel.getAbsolutePath();
+        String fileName     = this.name;
+        this.setExtension(fileName.substring(fileName.lastIndexOf(".")));
+    }
+
+    public void                         info(){
+        Main.printOnLevel(LEVEL,Main.delimiter());
+        Main.printOnLevel(LEVEL,"Workbook file name:     " + name);
+        Main.printOnLevel(LEVEL,"Workbook sheets count:  " + sheets.size());
+        Main.printOnLevel(LEVEL,Main.delimiter());
+    }
+    public void                         printResults() {
+        info();
+        for (ExcelWorksheet sheet:sheets) {
+            sheet.printResults();
+        }
+    }
+    public void                         getData(){
+        System.out.println("GETTING DATA " + name);
+        for (int i = 0; i< workbook.getNumberOfSheets(); i++) {
+            ExcelWorksheet worksheet = new ExcelWorksheet(workbook.getSheetAt(i));
+            sheets.add(worksheet.getData());
+        }
+        this.close();
+    }
+    public ExcelWorkbook                read(){
+        System.out.println("READING " + name);
         FileInputStream inputStream=null;
-        this.name = fileExcel.getAbsolutePath();
         try{
             inputStream= new FileInputStream(fileExcel);
-            Workbook currentWorkbook=null;
-            String fileName = fileExcel.getName();
-            String fileExtensionName = fileName.substring(fileName.lastIndexOf("."));
-            if (fileExtensionName.equals(XLSX)) {
-                currentWorkbook=new XSSFWorkbook(inputStream);
+            if (getExtension().equals(XLSX)) {
+                workbook =new XSSFWorkbook(inputStream);
             }
-            else if (fileExtensionName.equals(XLS)) {
-                currentWorkbook=new HSSFWorkbook(inputStream);
-            }
-            for (int i=0;i<currentWorkbook.getNumberOfSheets();i++) {
-                ExcelWorksheet worksheet = new ExcelWorksheet(currentWorkbook.getSheetAt(i));
-                sheets.add(worksheet.getData());
+            else if (getExtension().equals(XLS)) {
+                workbook =new HSSFWorkbook(inputStream);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -50,17 +83,40 @@ public class ExcelWorkbook {
                 }
             }
         }
+        return this;
     }
-    public void info(){
-        Main.printOnLevel(LEVEL,Main.delimiter());
-        Main.printOnLevel(LEVEL,"Workbook file name:     " + name);
-        Main.printOnLevel(LEVEL,"Workbook sheets count:  " + sheets.size());
-        Main.printOnLevel(LEVEL,Main.delimiter());
+
+    public void                         write(){
+        System.out.println("WRITING " + name);
+        FileOutputStream outputStream = null;
+        try{
+            outputStream = new FileOutputStream(fileExcel);
+            workbook.write(outputStream);
+        }
+        catch (Exception e){
+            throw new RuntimeException();
+        }
+        finally {
+            if (outputStream != null){
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
-    public void printResults() {
-        info();
-        for (ExcelWorksheet sheet:sheets) {
-            sheet.printResults();
+    public void                         close() {
+        if (workbook != null) {
+            try {
+                workbook.close();
+            } catch (Exception e) {
+                throw new RuntimeException();
+            } finally {
+                workbook = null;
+                System.out.println("CLOSING " + name);
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ public class FileBrowser {
             verifyAndAddFile(inputFolder);
         }
     }
-    public ArrayList<String> recursiveListofFiles(){
+    public ArrayList<String> recursiveListOfFiles(){
         return listOfFiles;
     }
 }

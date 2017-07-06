@@ -8,7 +8,6 @@ import org.apache.poi.ss.usermodel.CellType;
  */
 public class ColumnInfo {
     public String value;
-//    public String typeName;
     public CellType type;
     public int columnNumber;
     public static int LEVEL = ExcelWorksheet.LEVEL + 1;
