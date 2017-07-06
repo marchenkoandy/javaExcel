@@ -1,4 +1,4 @@
-package com.company.excel;
+package com.company.records;
 
 import org.apache.poi.ss.usermodel.CellType;
 

@@ -1,6 +1,8 @@
 package com.company.excel;
 
 import com.company.Main;
+import com.company.records.SheetInfo;
+import com.company.records.WorkbookInfo;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -16,52 +18,43 @@ import java.util.ArrayList;
  * Created by AMarchenko on 7/5/2017.
  */
 public class ExcelWorkbook {
-    public static final String XLSX = ".xlsx";
-    public static final String XLS = ".xls";
-    public static final String TILDA = "~$";
-    public static int LEVEL = Main.LEVEL + 1;
-    public String name;
-    public Workbook workbook = null;
-    public ArrayList<ExcelWorksheet> sheets = new ArrayList<ExcelWorksheet>();
-    public File fileExcel;
+    public static final String  XLSX = ".xlsx";
+    public static final String  XLS = ".xls";
+    public static final String  TILDA = "~$";
 
-    public String getExtension() {
+    public String               name;
+    private String              extension;
+    public File                 fileExcel;
+    public Workbook             workbook = null;
+
+    public WorkbookInfo         workbookInfo;
+    public String               getExtension() {
         return extension;
     }
 
-    public void setExtension(String extension) {
+    public void                 setExtension(String extension) {
         this.extension = extension;
     }
 
-    private String extension;
-    public ExcelWorkbook                (File fileExcel) {
-        this.fileExcel      = fileExcel;
-        this.name           = fileExcel.getAbsolutePath();
-        String fileName     = this.name;
+    public                      ExcelWorkbook(File fileExcel) {
+        this.fileExcel              = fileExcel;
+        this.name                   = fileExcel.getAbsolutePath();
+        String fileName             = this.name;
         this.setExtension(fileName.substring(fileName.lastIndexOf(".")));
+        workbookInfo                = new WorkbookInfo();
+        workbookInfo.sheetInfos     = new ArrayList<SheetInfo>();
     }
 
-    public void                         info(){
-        Main.printOnLevel(LEVEL,Main.delimiter());
-        Main.printOnLevel(LEVEL,"Workbook file name:     " + name);
-        Main.printOnLevel(LEVEL,"Workbook sheets count:  " + sheets.size());
-        Main.printOnLevel(LEVEL,Main.delimiter());
-    }
-    public void                         printResults() {
-        info();
-        for (ExcelWorksheet sheet:sheets) {
-            sheet.printResults();
-        }
-    }
-    public void                         getData(){
+    public void                 getData(){
         System.out.println("GETTING DATA " + name);
         for (int i = 0; i< workbook.getNumberOfSheets(); i++) {
             ExcelWorksheet worksheet = new ExcelWorksheet(workbook.getSheetAt(i));
-            sheets.add(worksheet.getData());
+            workbookInfo.sheetInfos.add(worksheet.getData());
         }
+        workbookInfo.name = this.name;
         this.close();
     }
-    public ExcelWorkbook                read(){
+    public ExcelWorkbook        read(){
         System.out.println("READING " + name);
         FileInputStream inputStream=null;
         try{
@@ -86,7 +79,7 @@ public class ExcelWorkbook {
         return this;
     }
 
-    public void                         write(){
+    public void                 write(){
         System.out.println("WRITING " + name);
         FileOutputStream outputStream = null;
         try{
@@ -107,7 +100,7 @@ public class ExcelWorkbook {
             }
         }
     }
-    public void                         close() {
+    public void                 close() {
         if (workbook != null) {
             try {
                 workbook.close();

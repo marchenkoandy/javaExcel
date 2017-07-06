@@ -1,5 +1,6 @@
 package com.company.excel;
 
+import com.company.records.Result;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

@@ -1,7 +1,7 @@
 package com.company.frame;
 
-import com.company.excel.ExcelWorkbook_OLD;
-import com.company.excel.Result;
+//import com.company.excel.ExcelWorkbook_OLD;
+import com.company.records.Result;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -65,17 +65,8 @@ public class MainDialog extends JDialog {
     }
     private void onFile() {
         // add your code here
-        ExcelWorkbook_OLD excelWorkbookOLD = new ExcelWorkbook_OLD();
-        results = excelWorkbookOLD.setInputFile("C:/Temp/ACO_LMO/ACO.XLSX").read();
-        for (Result r:results) {
-            String line;
-            line = "%s  %s  %s  %s  %s";
-            line = String.format(line, r.cellValue, r.cellType, r.cellSheetName, r.cellWorkbookName, r.cellColumnNumber);
-            textArea1.append(line + "\n");
-        }
-//            System.out.println(line);
-//        textArea1.append(results.get(0).cellValue);
-//        dispose();
+
+        dispose();
     }
 
     private void onCancel() {

@@ -2,54 +2,22 @@ package com.company;
 
 import com.company.excel.*;
 import com.company.files.FileBrowser;
-import com.company.frame.MainDialog;
+import com.company.records.ColumnInfo;
+import com.company.records.Result;
+import com.company.records.SheetInfo;
+import com.company.records.WorkbookInfo;
 import org.apache.poi.ss.usermodel.CellType;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
-    private void FormTest() {
-//     Create a file chooser
-//        MainDialog dialog = new MainDialog();
-//        dialog.pack();
-//        dialog.setVisible(true);
-////        System.exit(0);
-//        final JFileChooser fc = new JFileChooser();
-//        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg", "gif");
-//        fc.setFileFilter(filter);
-//        //In response to a button click:
-//        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//
-//        fc.showOpenDialog(dialog);
-//        int returnVal = fc.showOpenDialog();
-//        ExcelWorkbook_OLD excelWorkbook = new ExcelWorkbook_OLD();
-//        excelWorkbook.setInputFile("C:/Temp/ACO_LMO/ACO.XLSX").read().print();
-//        MainDialog dialog = new MainDialog();
-//        dialog.pack();
-//        dialog.setVisible(true);
-//        System.exit(0);
- }
-    private void test(){
-     FileBrowser fb = new FileBrowser();
-     fb.getFilesFromSingleFolder(new File("C:/Users/amarchenko/Desktop/Java_Excel"));
-     System.out.println("Files count is: " + fb.recursiveListOfFiles().size());
-     ArrayList<Result> currentResults = new ArrayList<Result>();
-     for (String file :fb.recursiveListOfFiles()) {
-//            System.out.println("Working with file: " + file);
-         ExcelWorkbook_OLD excelWorkbookOLD = new ExcelWorkbook_OLD();
-         excelWorkbookOLD.setInputFile(file).read();
-         currentResults.addAll(excelWorkbookOLD.getResults());
-     }
-//        ExcelWorkbook_OLD.print(currentResults);
-     ExcelWorkbook_OLD.print(ExcelWorkbook_OLD.uniqueList(currentResults));
- }
-    private static ArrayList<ExcelWorkbook> allWorkbooks = new ArrayList<ExcelWorkbook>();
-    private static ArrayList<Result> allResults = new ArrayList<Result>();
-    private static HashMap<String,Result> uniqueResults = new HashMap<String, Result>();
+
+    private static ArrayList<WorkbookInfo>  allWorkbooks            = new ArrayList<WorkbookInfo>();
+    private static ArrayList<Result>        allResults              = new ArrayList<Result>();
+    private static HashMap<String,Result>   uniqueResults           = new HashMap<String, Result>();
 
     public static int filesCount;
     public static int LEVEL = 1;
@@ -73,9 +41,9 @@ public class Main {
 
 
     public static ArrayList<Result>         getAllResults(){
-        for (ExcelWorkbook workbook:allWorkbooks) {
-            for (ExcelWorksheet sheet:workbook.sheets) {
-                for (ColumnInfo info:sheet.getColumnInfos()) {
+        for (WorkbookInfo workbook:allWorkbooks) {
+            for (SheetInfo sheet:workbook.sheetInfos) {
+                for (ColumnInfo info:sheet.columnInfos) {
                     Result r =new Result();
                     r.cellValue = info.value;
                     r.cellType = info.type;
@@ -107,7 +75,7 @@ public class Main {
     }
     public static void                      printResults(){
         info();
-        for (ExcelWorkbook workbook:allWorkbooks) {
+        for (WorkbookInfo workbook:allWorkbooks) {
             workbook.printResults();
         }
     }
@@ -128,17 +96,16 @@ public class Main {
         String delta = type != null? " with type '" + type.toString() + "' ": "";
         printOnLevel(LEVEL,"Full amount of unique records" + delta+": " + counter);
     }
-    public static void generateReportFile(String path,String reportFile){
+    public static void                      collectDataFromExcelFiles(String path, String reportFile){
         FileBrowser fb = new FileBrowser();
         fb.getFilesFromSingleFolder(new File(path));
         filesCount = fb.recursiveListOfFiles().size();
-        printOnLevel(LEVEL,"Files count: " +filesCount);
         for (String file : fb.recursiveListOfFiles()) {
             ExcelWorkbook excelWorkbook = new ExcelWorkbook(new File(file));
             excelWorkbook.read().getData();
-            allWorkbooks.add(excelWorkbook);
-//            excelWorkbook.close();
+            allWorkbooks.add(excelWorkbook.workbookInfo);
         }
+        printOnLevel(LEVEL,"Files count: " +filesCount);
         getUniqueResults();
 
         printUniqueResults(null);
@@ -151,11 +118,10 @@ public class Main {
         printUniqueResults(CellType.STRING);
 
         ReportXLSX reportXLSX = new ReportXLSX(new File(reportFile));
-        reportXLSX.setData(allResults);
         reportXLSX.setUniqueData(uniqueResults);
         reportXLSX.write();
     }
-    public static void performExcelFilesUpdate(String path,String reportFile){
+    public static void                      performExcelFilesUpdate(String path,String reportFile){
         File file = new File(reportFile);
         if (file.exists()) {
             ReportXLSX reportXLSX = new ReportXLSX(file);
@@ -165,12 +131,14 @@ public class Main {
     }
 
     public static void                      main(String[] args){
-        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1";
-        String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
+        String path             = "C:/Users/user/tmp/Java_Excel";
+        String reportFile       = "C:/Users/user/tmp/report.xlsx";
+//        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1";
+//        String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
         Actions actions         = Actions.COLLECT_DATA_FROM_EXCEL_FILES;
         switch (actions) {
             case COLLECT_DATA_FROM_EXCEL_FILES:
-                generateReportFile(path, reportFile);
+                collectDataFromExcelFiles(path, reportFile);
                 break;
             case PERFORM_EXCEL_FILES_UPDATE:
                 performExcelFilesUpdate(path,reportFile);
