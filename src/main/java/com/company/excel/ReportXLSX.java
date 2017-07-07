@@ -2,10 +2,8 @@ package com.company.excel;
 
 import com.company.Main;
 import com.company.records.Result;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.awt.*;
 import java.io.File;
@@ -40,7 +38,7 @@ public class ReportXLSX  extends WorkbookBase {
         row.createCell(p.x + 3).setCellValue(r.cellWorkbookName);
     }
     public void                                 setData(ArrayList<Result> results){
-        getWorkbook();
+        get();
         reCreateSheet(RESULTS_ALL);
         for (int i=0;i<results.size();i++) {
             Point p = new Point();
@@ -48,8 +46,8 @@ public class ReportXLSX  extends WorkbookBase {
             setSingleRow(workbook.getSheet(RESULTS_ALL),p, results.get(i));
         }
     }
-    public void                                 setUniqueData(HashMap<String,Result> uniqueResults ){
-        getWorkbook();
+    public void                                 setData(HashMap<String,Result> uniqueResults ){
+        get();
         reCreateSheet(RESULTS_UNIQUE);
         int i=0;
         for (Map.Entry<String,Result> item: uniqueResults.entrySet()) {
@@ -60,15 +58,15 @@ public class ReportXLSX  extends WorkbookBase {
         }
     }
     public HashMap<String,String>               getData() {
+        get();
         Main.printOnLevel(Main.DEBUG_LEVEL,"GETTING DATA...: " + name);
-        getWorkbook();
         HashMap<String, String> uniqueHeader = new HashMap<String, String>();
         Sheet sheet = workbook.getSheet(RESULTS_UNIQUE);
         if (sheet != null) {
             for (int i = 0; i < sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
-                String key      = this.convertDataToString(row.getCell(1));
-                String value    = this.convertDataToString(row.getCell(0));
+                String key      = this.getStringDataValue(row.getCell(1));
+                String value    = this.getStringDataValue(row.getCell(0));
                 boolean b1      = !key.equals("");
                 boolean b2      = !value.equals("");
                 boolean b3      = !uniqueHeader.containsKey(key);

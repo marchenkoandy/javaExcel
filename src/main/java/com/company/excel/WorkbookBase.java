@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+
 /**
  * Created by AMarchenko on 7/7/2017.
  */
@@ -17,7 +18,6 @@ public class WorkbookBase {
     public static final String  XLSX = ".xlsx";
     public static final String  XLS = ".xls";
     public static final String  TILDA = "~$";
-
 
     public String               name;
     public String               extension;
@@ -30,7 +30,7 @@ public class WorkbookBase {
         String fileName             = this.name;
         this.extension              = fileName.substring(fileName.lastIndexOf("."));
     }
-    public void                 getWorkbook(){
+    public void                 get(){
         if (workbook == null) {
             if (this.fileExcel.exists()) {
                 read();
@@ -59,6 +59,7 @@ public class WorkbookBase {
                 workbook =new HSSFWorkbook(inputStream);
             }
         } catch (IOException e) {
+            Main.printOnLevel(Main.DEBUG_LEVEL,e.getMessage());
             throw new RuntimeException(e);
         } finally {
             if (inputStream != null){
@@ -71,7 +72,7 @@ public class WorkbookBase {
         }
     }
     public void                 write(){
-        Main.printOnLevel(Main.DEBUG_LEVEL,"WRITING...: " + name);
+        Main.printOnLevel(Main.DEBUG_LEVEL,"WRITING DATA...: " + name);
         FileOutputStream outputStream = null;
         try{
             outputStream = new FileOutputStream(fileExcel);
@@ -81,6 +82,7 @@ public class WorkbookBase {
             workbook.write(outputStream);
         }
         catch (Exception e){
+            Main.printOnLevel(Main.DEBUG_LEVEL,e.getMessage());
             throw new RuntimeException();
         }
         finally {
@@ -89,6 +91,7 @@ public class WorkbookBase {
                     outputStream.flush();
                     outputStream.close();
                 }catch (Exception e){
+                    Main.printOnLevel(Main.DEBUG_LEVEL,e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -100,13 +103,14 @@ public class WorkbookBase {
             try {
                 workbook.close();
             } catch (Exception e) {
+                Main.printOnLevel(Main.DEBUG_LEVEL,e.getMessage());
                 throw new RuntimeException();
             } finally {
                 workbook = null;
             }
         }
     }
-    public static String        convertDataToString(Cell cell){
+    public static String        getStringDataValue(Cell cell){
         String sOut = "";
         if (cell != null) {
             switch (cell.getCellTypeEnum()) {

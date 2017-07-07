@@ -19,10 +19,10 @@ public class Main {
     private static ArrayList<Result>        results                 = new ArrayList<Result>();
     private static HashMap<String,Result>   uniqueResults           = new HashMap<String, Result>();
 
-    private static int                       filesCount;
+    private static int                      filesCount;
     public static int                       LEVEL = 1;
     public static final int                 DEBUG_LEVEL = -1;
-    private static final boolean             printDebug = true;
+    private static final boolean            printDebug = false;
 
     public static String                    delimiter(){
         return "========================================";
@@ -37,13 +37,13 @@ public class Main {
             System.out.println(tabs + line);
         }
     }
-    private static void                      info(){
+    private static void                     info(){
         printOnLevel(LEVEL, delimiter());
         printOnLevel(LEVEL,"Files count is: " + filesCount);
         printOnLevel(LEVEL, delimiter());
     }
 
-    private static ArrayList<Result>         getAllResults(){
+    private static ArrayList<Result>        getAllResults(){
         for (WorkbookInfo workbook: workbookInfos) {
             for (SheetInfo sheet:workbook.sheetInfos) {
                 for (ColumnInfo info:sheet.columnInfos) {
@@ -59,7 +59,7 @@ public class Main {
         }
         return results;
     }
-    private static HashMap<String,Result>    getUniqueResults(){
+    private static HashMap<String,Result>   getUniqueResults(){
         if (workbookInfos.size()!= 0 && results.size() == 0){
             getAllResults();
         }
@@ -88,7 +88,7 @@ public class Main {
         }
         printOnLevel(LEVEL,"Full amount of records is: " + results.size());
     }
-    private static void                      printUniqueResults(CellType type){
+    private static void                     printUniqueResults(CellType type){
         int counter = 0;
         for (Map.Entry<String,Result> item: uniqueResults.entrySet()) {
             if (type == null || item.getValue().cellType == type){
@@ -99,7 +99,7 @@ public class Main {
         String delta = type != null? " with type '" + type.toString() + "' ": "";
         printOnLevel(DEBUG_LEVEL,"Full amount of unique records" + delta+": " + counter);
     }
-    private static void                      collectDataFromExcelFiles(String path, String reportFile){
+    private static void                     collectDataFromExcelFiles(String path, String reportFile){
         FileBrowser fb = new FileBrowser();
         fb.getFilesFromSingleFolder(new File(path));
         filesCount = fb.recursiveListOfFiles().size();
@@ -107,6 +107,7 @@ public class Main {
             ExcelWorkbook excelWorkbook = new ExcelWorkbook(new File(file));
             excelWorkbook.read();
             excelWorkbook.getData();
+            excelWorkbook.close();
             workbookInfos.add(excelWorkbook.workbookInfo);
         }
         printOnLevel(DEBUG_LEVEL,"Files count: " +filesCount);
@@ -122,33 +123,47 @@ public class Main {
         printUniqueResults(CellType.STRING);
 
         ReportXLSX reportXLSX = new ReportXLSX(new File(reportFile));
-        reportXLSX.setUniqueData(uniqueResults);
+//        reportXLSX.setData(results);
+        reportXLSX.setData(uniqueResults);
         reportXLSX.write();
     }
-    private static void                      performExcelFilesUpdate(String path,String reportFile){
+    private static void                     performExcelFilesUpdate(String path,String reportFile){
         File reportFileXLS = new File(reportFile);
         if (reportFileXLS.exists()) {
             ReportXLSX reportXLSX = new ReportXLSX(reportFileXLS);
-            reportXLSX.setData(results);
             HashMap<String, String> uniqueResults = reportXLSX.getData();
-            FileBrowser fb = new FileBrowser();
-            fb.getFilesFromSingleFolder(new File(path));
-            filesCount = fb.recursiveListOfFiles().size();
-            for (String file : fb.recursiveListOfFiles()) {
-                ExcelWorkbook excelWorkbook = new ExcelWorkbook(new File(file));
-                excelWorkbook.read();
-//                excelWorkbook.getData();
-//                workbookInfos.add(excelWorkbook.workbookInfo);
-                excelWorkbook.close();
+            if (uniqueResults.size()>0) {
+                int changedFilesCount = 0;
+                FileBrowser fb = new FileBrowser();
+                fb.getFilesFromSingleFolder(new File(path));
+                filesCount = fb.recursiveListOfFiles().size();
+                for (String file : fb.recursiveListOfFiles()) {
+                    ExcelWorkbook excelWorkbook = new ExcelWorkbook(new File(file));
+                    excelWorkbook.read();
+                    excelWorkbook.setData(uniqueResults);
+                    if (excelWorkbook.isNeedToBeSaved()) {
+                        excelWorkbook.write();
+                        changedFilesCount ++;
+                        printOnLevel(LEVEL,"FILE was changed...: " + file);
+                    }
+                    excelWorkbook.close();
+                }
+                if (changedFilesCount==0){
+                    printOnLevel(LEVEL,"No files of " + filesCount + " were changed.");
+                }
+                else {
+                    printOnLevel(LEVEL,changedFilesCount +" file(s) of " + filesCount + " was(were) changed.");
+                }
+                printOnLevel(DEBUG_LEVEL, "Files count: " + filesCount);
             }
-            printOnLevel(DEBUG_LEVEL,"Files count: " +filesCount);
         }
     }
 
     public static void                      main(String[] args){
 //        String path             = "C:/Users/user/tmp/Java_Excel";
 //        String reportFile       = "C:/Users/user/tmp/report.xlsx";
-        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1";
+        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1 - Copy";
+//        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1/Dragon - Converted/Audio_Preservation/Audio_Preservation_After_CorrectMenu_SpellWindow - Copy.xlsx";
         String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
         Actions actions         = Actions.PERFORM_EXCEL_FILES_UPDATE;
         switch (actions) {
