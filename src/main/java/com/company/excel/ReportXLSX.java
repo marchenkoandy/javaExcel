@@ -77,6 +77,7 @@ public class ReportXLSX  extends WorkbookBase {
                 }
             }
         }
+        this.close();
         return uniqueHeader;
     }
 }

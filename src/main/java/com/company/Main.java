@@ -22,7 +22,7 @@ public class Main {
     public static int filesCount;
     public static int LEVEL = 1;
     public static final int DEBUG_LEVEL = -1;
-    public static final boolean printDebug = false;
+    public static final boolean printDebug = true;
 
     public static String                    delimiter(){
         return "========================================";
@@ -42,7 +42,6 @@ public class Main {
         printOnLevel(LEVEL,"Files count is: " + filesCount);
         printOnLevel(LEVEL, delimiter());
     }
-
 
     public static ArrayList<Result>         getAllResults(){
         for (WorkbookInfo workbook: workbookInfos) {
@@ -127,11 +126,22 @@ public class Main {
         reportXLSX.write();
     }
     public static void                      performExcelFilesUpdate(String path,String reportFile){
-        File file = new File(reportFile);
-        if (file.exists()) {
-            ReportXLSX reportXLSX = new ReportXLSX(file);
+        File reportFileXLS = new File(reportFile);
+        if (reportFileXLS.exists()) {
+            ReportXLSX reportXLSX = new ReportXLSX(reportFileXLS);
             reportXLSX.setData(results);
             HashMap<String, String> uniqueResults = reportXLSX.getData();
+            FileBrowser fb = new FileBrowser();
+            fb.getFilesFromSingleFolder(new File(path));
+            filesCount = fb.recursiveListOfFiles().size();
+            for (String file : fb.recursiveListOfFiles()) {
+                ExcelWorkbook excelWorkbook = new ExcelWorkbook(new File(file));
+                excelWorkbook.read();
+//                excelWorkbook.getData();
+//                workbookInfos.add(excelWorkbook.workbookInfo);
+                excelWorkbook.close();
+            }
+            printOnLevel(DEBUG_LEVEL,"Files count: " +filesCount);
         }
     }
 
@@ -140,7 +150,7 @@ public class Main {
 //        String reportFile       = "C:/Users/user/tmp/report.xlsx";
         String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1";
         String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
-        Actions actions         = Actions.COLLECT_DATA_FROM_EXCEL_FILES;
+        Actions actions         = Actions.PERFORM_EXCEL_FILES_UPDATE;
         switch (actions) {
             case COLLECT_DATA_FROM_EXCEL_FILES:
                 collectDataFromExcelFiles(path, reportFile);

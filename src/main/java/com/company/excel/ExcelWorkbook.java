@@ -18,7 +18,6 @@ public class ExcelWorkbook extends WorkbookBase{
         workbookInfo                = new WorkbookInfo();
         workbookInfo.sheetInfos     = new ArrayList<SheetInfo>();
     }
-
     public void                 getData(){
         Main.printOnLevel(Main.DEBUG_LEVEL,"GETTING DATA...: " + name);
         for (int i = 0; i< workbook.getNumberOfSheets(); i++) {
@@ -28,7 +27,4 @@ public class ExcelWorkbook extends WorkbookBase{
         workbookInfo.name = this.name;
         this.close();
     }
-
-
-
 }

@@ -48,7 +48,7 @@ public class WorkbookBase {
 
     }
     public void                 read(){
-        Main.printOnLevel(Main.DEBUG_LEVEL,"READING...: " + name);
+        Main.printOnLevel(Main.DEBUG_LEVEL,"READING FILE...: " + name);
         FileInputStream inputStream=null;
         try{
             inputStream= new FileInputStream(fileExcel);
@@ -95,7 +95,7 @@ public class WorkbookBase {
         }
     }
     public void                 close() {
-        Main.printOnLevel(Main.DEBUG_LEVEL,"CLOSING...: " + name);
+        Main.printOnLevel(Main.DEBUG_LEVEL,"CLOSING FILE...: " + name);
         if (workbook != null) {
             try {
                 workbook.close();
