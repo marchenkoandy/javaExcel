@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by user on 06.07.2017.
  */
-public class WorkbookInfo {
+public class WorkbookInfo implements ExcelInterface {
     public String                           name;
     public ArrayList<SheetInfo>             sheetInfos;
     public static int LEVEL                 = Main.LEVEL + 1;

@@ -1,14 +1,13 @@
 package com.company.records;
 
 import com.company.Main;
-import com.company.excel.ExcelWorkbook;
 
 import java.util.ArrayList;
 
 /**
  * Created by user on 06.07.2017.
  */
-public class SheetInfo {
+public class SheetInfo implements ExcelInterface {
     public String                       name;
     public ArrayList<ColumnInfo>        columnInfos;
     public static int LEVEL             = Main.LEVEL + 2;

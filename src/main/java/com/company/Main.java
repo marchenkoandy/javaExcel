@@ -15,23 +15,27 @@ import java.util.Map;
 
 public class Main {
 
-    private static ArrayList<WorkbookInfo>  allWorkbooks            = new ArrayList<WorkbookInfo>();
-    private static ArrayList<Result>        allResults              = new ArrayList<Result>();
+    private static ArrayList<WorkbookInfo>  workbookInfos = new ArrayList<WorkbookInfo>();
+    private static ArrayList<Result>        results = new ArrayList<Result>();
     private static HashMap<String,Result>   uniqueResults           = new HashMap<String, Result>();
 
     public static int filesCount;
     public static int LEVEL = 1;
+    public static final int DEBUG_LEVEL = -1;
+    public static final boolean printDebug = false;
 
     public static String                    delimiter(){
         return "========================================";
     }
-    public static void                      printOnLevel(int level, String line){
+    public static void                      printOnLevel(int level, String line) {
         String tab = "\t";
         String tabs = "";
-        for (int i=1;i<level;i++){
+        for (int i = 1; i < level; i++) {
             tabs += tab;
         }
-        System.out.println(tabs + line);
+        if (level!=DEBUG_LEVEL || printDebug)  {
+            System.out.println(tabs + line);
+        }
     }
     public static void                      info(){
         printOnLevel(LEVEL, delimiter());
@@ -41,7 +45,7 @@ public class Main {
 
 
     public static ArrayList<Result>         getAllResults(){
-        for (WorkbookInfo workbook:allWorkbooks) {
+        for (WorkbookInfo workbook: workbookInfos) {
             for (SheetInfo sheet:workbook.sheetInfos) {
                 for (ColumnInfo info:sheet.columnInfos) {
                     Result r =new Result();
@@ -50,17 +54,17 @@ public class Main {
                     r.cellColumnNumber = info.columnNumber;
                     r.cellSheetName = sheet.name;
                     r.cellWorkbookName = workbook.name;
-                    allResults.add(r);
+                    results.add(r);
                 }
             }
         }
-        return allResults;
+        return results;
     }
     public static HashMap<String,Result>    getUniqueResults(){
-        if (allWorkbooks.size()!= 0 && allResults.size() == 0){
+        if (workbookInfos.size()!= 0 && results.size() == 0){
             getAllResults();
         }
-        for (Result r:allResults) {
+        for (Result r: results) {
             if (!uniqueResults.containsKey(r.cellValue)){
                 uniqueResults.put(r.cellValue,r);
             }
@@ -71,30 +75,30 @@ public class Main {
         String line;
         line = "%s %s %s %s %s";
         line = String.format(line,r.cellValue,r.cellType,r.cellSheetName,r.cellWorkbookName,r.cellColumnNumber);
-        printOnLevel(LEVEL,line);
+        printOnLevel(DEBUG_LEVEL,line);
     }
     public static void                      printResults(){
         info();
-        for (WorkbookInfo workbook:allWorkbooks) {
+        for (WorkbookInfo workbook: workbookInfos) {
             workbook.printResults();
         }
     }
     public static void                      printAllResultRecords(){
-        for (Result r: allResults) {
+        for (Result r: results) {
             printSingleRecord(r);
         }
-        printOnLevel(LEVEL,"Full amount of records is: " + allResults.size());
+        printOnLevel(LEVEL,"Full amount of records is: " + results.size());
     }
     public static void                      printUniqueResults(CellType type){
         int counter = 0;
         for (Map.Entry<String,Result> item: uniqueResults.entrySet()) {
             if (type == null || item.getValue().cellType == type){
-//                printSingleRecord(item.getValue());
+                printSingleRecord(item.getValue());
                 counter += 1;
             }
         }
         String delta = type != null? " with type '" + type.toString() + "' ": "";
-        printOnLevel(LEVEL,"Full amount of unique records" + delta+": " + counter);
+        printOnLevel(DEBUG_LEVEL,"Full amount of unique records" + delta+": " + counter);
     }
     public static void                      collectDataFromExcelFiles(String path, String reportFile){
         FileBrowser fb = new FileBrowser();
@@ -102,10 +106,11 @@ public class Main {
         filesCount = fb.recursiveListOfFiles().size();
         for (String file : fb.recursiveListOfFiles()) {
             ExcelWorkbook excelWorkbook = new ExcelWorkbook(new File(file));
-            excelWorkbook.read().getData();
-            allWorkbooks.add(excelWorkbook.workbookInfo);
+            excelWorkbook.read();
+            excelWorkbook.getData();
+            workbookInfos.add(excelWorkbook.workbookInfo);
         }
-        printOnLevel(LEVEL,"Files count: " +filesCount);
+        printOnLevel(DEBUG_LEVEL,"Files count: " +filesCount);
         getUniqueResults();
 
         printUniqueResults(null);
@@ -125,16 +130,16 @@ public class Main {
         File file = new File(reportFile);
         if (file.exists()) {
             ReportXLSX reportXLSX = new ReportXLSX(file);
-            reportXLSX.setData(allResults);
-            HashMap<String, String> uniqueResults = reportXLSX.getUniqueData();
+            reportXLSX.setData(results);
+            HashMap<String, String> uniqueResults = reportXLSX.getData();
         }
     }
 
     public static void                      main(String[] args){
-        String path             = "C:/Users/user/tmp/Java_Excel";
-        String reportFile       = "C:/Users/user/tmp/report.xlsx";
-//        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1";
-//        String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
+//        String path             = "C:/Users/user/tmp/Java_Excel";
+//        String reportFile       = "C:/Users/user/tmp/report.xlsx";
+        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1";
+        String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
         Actions actions         = Actions.COLLECT_DATA_FROM_EXCEL_FILES;
         switch (actions) {
             case COLLECT_DATA_FROM_EXCEL_FILES:

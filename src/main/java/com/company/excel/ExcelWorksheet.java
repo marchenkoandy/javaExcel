@@ -17,36 +17,17 @@ public class ExcelWorksheet {
     private Row             firstRow;
     private Sheet           sheet;
     private int             headerRowColumnsCount;
-
     public SheetInfo        sheetInfo;
 
-    public static String    convertDataToString(Cell cell){
-        String sOut = "";
-        if (cell != null) {
-            switch (cell.getCellTypeEnum()) {
-                case STRING:
-                    sOut = cell.getStringCellValue();
-                    break;
-                case BOOLEAN:
-                    sOut = Boolean.toString(cell.getBooleanCellValue());
-                    break;
-                case NUMERIC:
-                    sOut = Double.toString(cell.getNumericCellValue());
-                    break;
-            }
-        }
-        return sOut;
-    }
     private ColumnInfo      getColumnInfo(int i) {
         ColumnInfo columnInfo       = new ColumnInfo();
         Cell currentHeaderCell      = headerRow.getCell(i);
         Cell currentFirstRowCell    = firstRow.getCell(i);
-        columnInfo.value            = convertDataToString(currentHeaderCell);
+        columnInfo.value            = WorkbookBase.convertDataToString(currentHeaderCell);
         columnInfo.type             = currentFirstRowCell != null ? currentFirstRowCell.getCellTypeEnum() : CellType.BLANK;
         columnInfo.columnNumber     = i + 1;
         return columnInfo;
     }
-
     public                  ExcelWorksheet(Sheet sheet){
         this.sheet                  = sheet;
         headerRow                   = sheet.getRow(0);
