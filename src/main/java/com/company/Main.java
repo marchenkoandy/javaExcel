@@ -15,14 +15,14 @@ import java.util.Map;
 
 public class Main {
 
-    private static ArrayList<WorkbookInfo>  workbookInfos = new ArrayList<WorkbookInfo>();
-    private static ArrayList<Result>        results = new ArrayList<Result>();
+    private static ArrayList<WorkbookInfo>  workbookInfos           = new ArrayList<WorkbookInfo>();
+    private static ArrayList<Result>        results                 = new ArrayList<Result>();
     private static HashMap<String,Result>   uniqueResults           = new HashMap<String, Result>();
 
-    public static int filesCount;
-    public static int LEVEL = 1;
-    public static final int DEBUG_LEVEL = -1;
-    public static final boolean printDebug = true;
+    private static int                       filesCount;
+    public static int                       LEVEL = 1;
+    public static final int                 DEBUG_LEVEL = -1;
+    private static final boolean             printDebug = true;
 
     public static String                    delimiter(){
         return "========================================";
@@ -37,13 +37,13 @@ public class Main {
             System.out.println(tabs + line);
         }
     }
-    public static void                      info(){
+    private static void                      info(){
         printOnLevel(LEVEL, delimiter());
         printOnLevel(LEVEL,"Files count is: " + filesCount);
         printOnLevel(LEVEL, delimiter());
     }
 
-    public static ArrayList<Result>         getAllResults(){
+    private static ArrayList<Result>         getAllResults(){
         for (WorkbookInfo workbook: workbookInfos) {
             for (SheetInfo sheet:workbook.sheetInfos) {
                 for (ColumnInfo info:sheet.columnInfos) {
@@ -59,7 +59,7 @@ public class Main {
         }
         return results;
     }
-    public static HashMap<String,Result>    getUniqueResults(){
+    private static HashMap<String,Result>    getUniqueResults(){
         if (workbookInfos.size()!= 0 && results.size() == 0){
             getAllResults();
         }
@@ -88,7 +88,7 @@ public class Main {
         }
         printOnLevel(LEVEL,"Full amount of records is: " + results.size());
     }
-    public static void                      printUniqueResults(CellType type){
+    private static void                      printUniqueResults(CellType type){
         int counter = 0;
         for (Map.Entry<String,Result> item: uniqueResults.entrySet()) {
             if (type == null || item.getValue().cellType == type){
@@ -99,7 +99,7 @@ public class Main {
         String delta = type != null? " with type '" + type.toString() + "' ": "";
         printOnLevel(DEBUG_LEVEL,"Full amount of unique records" + delta+": " + counter);
     }
-    public static void                      collectDataFromExcelFiles(String path, String reportFile){
+    private static void                      collectDataFromExcelFiles(String path, String reportFile){
         FileBrowser fb = new FileBrowser();
         fb.getFilesFromSingleFolder(new File(path));
         filesCount = fb.recursiveListOfFiles().size();
@@ -125,7 +125,7 @@ public class Main {
         reportXLSX.setUniqueData(uniqueResults);
         reportXLSX.write();
     }
-    public static void                      performExcelFilesUpdate(String path,String reportFile){
+    private static void                      performExcelFilesUpdate(String path,String reportFile){
         File reportFileXLS = new File(reportFile);
         if (reportFileXLS.exists()) {
             ReportXLSX reportXLSX = new ReportXLSX(reportFileXLS);
