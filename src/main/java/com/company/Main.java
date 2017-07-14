@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.excel.*;
+import com.company.excel.thread.JThread;
 import com.company.files.FileBrowser;
 import com.company.records.ColumnInfo;
 import com.company.records.Result;
@@ -9,11 +10,19 @@ import com.company.records.WorkbookInfo;
 import org.apache.poi.ss.usermodel.CellType;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Main {
+
+    public static synchronized void setWorkbookInfos(ArrayList<WorkbookInfo> toSet) {
+
+
+    }
+
+
+    public static synchronized ArrayList<WorkbookInfo> getWorkbookInfos() {
+        return workbookInfos;
+    }
 
     private static ArrayList<WorkbookInfo>  workbookInfos           = new ArrayList<WorkbookInfo>();
     private static ArrayList<Result>        results                 = new ArrayList<Result>();
@@ -22,7 +31,7 @@ public class Main {
     private static int                      filesCount;
     public static int                       LEVEL = 1;
     public static final int                 DEBUG_LEVEL = -1;
-    private static final boolean            printDebug = false;
+    private static final boolean            printDebug = true;
 
     public static String                    delimiter(){
         return "========================================";
@@ -99,6 +108,52 @@ public class Main {
         String delta = type != null? " with type '" + type.toString() + "' ": "";
         printOnLevel(DEBUG_LEVEL,"Full amount of unique records" + delta+": " + counter);
     }
+    private static void                     collectDataFromExcelFilesWithTheads(String path, String reportFile) {
+        FileBrowser fb = new FileBrowser();
+        fb.getFilesFromSingleFolder(new File(path));
+        filesCount = fb.recursiveListOfFiles().size();
+        printOnLevel(DEBUG_LEVEL,"Files count: " +filesCount);
+        for (int i=0;i<filesCount-5;i=i+5) {
+            JThread t1 = new JThread("t1 " + i+0, fb.recursiveListOfFiles().get(i+0));
+            t1.start();
+            JThread t2 = new JThread("t2 " + i+1, fb.recursiveListOfFiles().get(i+1));
+            t2.start();
+            JThread t3 = new JThread("t3 " + i+2, fb.recursiveListOfFiles().get(i+2));
+            t3.start();
+            JThread t4 = new JThread("t4 " + i+3, fb.recursiveListOfFiles().get(i+3));
+            t4.start();
+            JThread t5 = new JThread("t5 " + i+4, fb.recursiveListOfFiles().get(i+4));
+            t5.start();
+            try {
+                t1.join();
+                t2.join();
+                t3.join();
+                t4.join();
+                t5.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+        printOnLevel(DEBUG_LEVEL,"Files count: " +filesCount);
+        getUniqueResults();
+
+        printUniqueResults(null);
+        printUniqueResults(CellType.BLANK);
+        printUniqueResults(CellType._NONE);
+        printUniqueResults(CellType.BOOLEAN);
+        printUniqueResults(CellType.NUMERIC);
+        printUniqueResults(CellType.ERROR);
+        printUniqueResults(CellType.FORMULA);
+        printUniqueResults(CellType.STRING);
+
+        ReportXLSX reportXLSX = new ReportXLSX(new File(reportFile));
+//        reportXLSX.setData(results);
+        reportXLSX.setData(uniqueResults);
+        reportXLSX.write();
+        printOnLevel(DEBUG_LEVEL,"Were run " + JThread.counter + " threads..");
+    }
     private static void                     collectDataFromExcelFiles(String path, String reportFile){
         FileBrowser fb = new FileBrowser();
         fb.getFilesFromSingleFolder(new File(path));
@@ -109,6 +164,7 @@ public class Main {
             excelWorkbook.getData();
             excelWorkbook.close();
             workbookInfos.add(excelWorkbook.workbookInfo);
+
         }
         printOnLevel(DEBUG_LEVEL,"Files count: " +filesCount);
         getUniqueResults();
@@ -165,14 +221,24 @@ public class Main {
         String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1 - Copy";
 //        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1/Dragon - Converted/Audio_Preservation/Audio_Preservation_After_CorrectMenu_SpellWindow - Copy.xlsx";
         String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
-        Actions actions         = Actions.PERFORM_EXCEL_FILES_UPDATE;
+        Actions actions         = Actions.COLLECT_DATA_FROM_EXCEL_FILES_WITH_THREADS;
+//        Thread t = Thread.currentThread(); // получаем главный поток
+//        System.out.println(t.getName()); // main
+        long start = System.currentTimeMillis();
         switch (actions) {
             case COLLECT_DATA_FROM_EXCEL_FILES:
                 collectDataFromExcelFiles(path, reportFile);
+                break;
+            case COLLECT_DATA_FROM_EXCEL_FILES_WITH_THREADS:
+                collectDataFromExcelFilesWithTheads(path, reportFile);
                 break;
             case PERFORM_EXCEL_FILES_UPDATE:
                 performExcelFilesUpdate(path,reportFile);
                 break;
         }
+        long finish = System.currentTimeMillis();
+        printOnLevel(DEBUG_LEVEL,"Code was executed in: " + (finish - start));
     }
+
+
 }
