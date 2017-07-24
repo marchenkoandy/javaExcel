@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="javaExcel" target="1.5" />
+      <module name="javaExcel" target="1.8" />
       <module name="JavaExcel" target="1.5" />
     </bytecodeTargetLevel>
   </component>

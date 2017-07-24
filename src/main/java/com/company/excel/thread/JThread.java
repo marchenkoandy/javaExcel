@@ -19,7 +19,7 @@ public class JThread extends Thread{
 
     }
     public void run(){
-        System.out.printf("Thread %s begins to work\n", Thread.currentThread().getName());
+//        System.out.printf("Thread %s begins to work\n", Thread.currentThread().getName());
         try{
             ExcelWorkbook excelWorkbook = new ExcelWorkbook(new File(file));
             excelWorkbook.read();
@@ -31,6 +31,6 @@ public class JThread extends Thread{
             Main.printOnLevel(Main.DEBUG_LEVEL,e.getMessage());
             throw new RuntimeException();
         }
-        System.out.printf("Thread %s stops to work\n", Thread.currentThread().getName());
+//        System.out.printf("Thread %s stops to work\n", Thread.currentThread().getName());
     }
 }
