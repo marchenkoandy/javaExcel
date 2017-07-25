@@ -3,10 +3,7 @@ package com.company;
 import com.company.excel.*;
 import com.company.excel.thread.JThread;
 import com.company.files.FileBrowser;
-import com.company.records.ColumnInfo;
-import com.company.records.Result;
-import com.company.records.SheetInfo;
-import com.company.records.WorkbookInfo;
+import com.company.records.*;
 import org.apache.poi.ss.usermodel.CellType;
 
 import java.io.File;
@@ -203,10 +200,14 @@ public class Main {
     public static void                      main(String[] args){
 //        String path             = "C:/Users/user/tmp/Java_Excel";
 //        String reportFile       = "C:/Users/user/tmp/report.xlsx";
-        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1 - Copy";
+//        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1 - Copy";
 //        String path             = "C:/Users/amarchenko/Desktop/Java_Excel/vbs_password_1/Dragon - Converted/Audio_Preservation/Audio_Preservation_After_CorrectMenu_SpellWindow - Copy.xlsx";
-        String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
-        Actions actions         = Actions.COLLECT_DATA_FROM_EXCEL_FILES;
+//        String reportFile       = "report.xlsx";
+//        String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
+        Config config           = new Config(args);
+        String actions          = config.getAction();
+        String path             = config.getPath();
+        String reportFile       = config.getResultFile();
 
         int timesToRepeat = 1;
         long sum = 0;
@@ -214,16 +215,20 @@ public class Main {
         for (int i=1;i<=timesToRepeat;i++) {
 
             long start = System.currentTimeMillis();
-            switch (actions) {
-                case COLLECT_DATA_FROM_EXCEL_FILES:
-                    collectDataFromExcelFiles(path, reportFile);
-                    break;
-                case COLLECT_DATA_FROM_EXCEL_FILES_WITH_THREADS:
-                    collectDataFromExcelFilesWithThreads(path, reportFile);
-                    break;
-                case PERFORM_EXCEL_FILES_UPDATE:
-                    performExcelFilesUpdate(path, reportFile);
-                    break;
+            if (actions.equals(Actions.GET.toString())) {
+                collectDataFromExcelFiles(path, reportFile);
+            }
+            else if (actions.equals(Actions.SET.toString())) {
+                performExcelFilesUpdate(path, reportFile);
+            }
+            else if (actions.equals(Actions.COLLECT_DATA_FROM_EXCEL_FILES.toString())) {
+//                collectDataFromExcelFiles(path, reportFile);
+            }
+            else if (actions.equals(Actions.COLLECT_DATA_FROM_EXCEL_FILES_WITH_THREADS.toString())) {
+//                collectDataFromExcelFilesWithThreads(path, reportFile);
+            }
+            else if (actions.equals(Actions.PERFORM_EXCEL_FILES_UPDATE.toString())) {
+//                performExcelFilesUpdate(path, reportFile);
             }
             long finish = System.currentTimeMillis();
             long duration = (finish - start);
@@ -232,12 +237,11 @@ public class Main {
         }
 
         long average = sum / repeatTimes.size();
-        printOnLevel(LEVEL, "Code was executed by using             " + (actions==Actions.COLLECT_DATA_FROM_EXCEL_FILES_WITH_THREADS?iMaxThreadsCount:1) + " thread(s)");
         printOnLevel(LEVEL, "Files count is                         " + filesCount);
         printOnLevel(LEVEL, "Full execution time:\n                 " + sum);
-        printOnLevel(LEVEL, "Average execution time:\n              " + average);
+        printOnLevel(DEBUG_LEVEL, "Average execution time:\n              " + average);
         for (int i=0;i<repeatTimes.size();i++){
-            printOnLevel(LEVEL, repeatTimes.get(i).toString());
+            printOnLevel(DEBUG_LEVEL, repeatTimes.get(i).toString());
         }
 
     }
