@@ -208,7 +208,7 @@ public class Main {
         String reportFile       = "C:/Users/amarchenko/Desktop/Java_Excel/report.xlsx";
         Actions actions         = Actions.COLLECT_DATA_FROM_EXCEL_FILES;
 
-        int timesToRepeat = 10;
+        int timesToRepeat = 1;
         long sum = 0;
         Vector<Long> repeatTimes = new Vector<Long>();
         for (int i=1;i<=timesToRepeat;i++) {
